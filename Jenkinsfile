@@ -5,7 +5,7 @@ pipeline {
 			agent { docker 'maven:3.8.2-jdk-8' }
 			steps {
 				echo 'Hello, Maven'
-				sh 'mvn -B clean package'
+				sh 'mvn -B -D skipTests clean package'
 			}
 		}
 		stage('Run') {
