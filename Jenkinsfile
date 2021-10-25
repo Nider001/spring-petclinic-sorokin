@@ -6,12 +6,14 @@ pipeline {
 			steps {
 				echo 'Hello, Maven'
 				sh 'mvn -B -D skipTests clean package'
+                                stash includes: '/target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
 		}
 		stage('Run') {
 			agent { docker 'openjdk:8-jre' }
 			steps {
 				echo 'Hello, JDK'
+                                unstash 'app'
 				sh 'java -jar /spring-petclinic-2.5.0-SNAPSHOT.jar'
 			}
 		}
