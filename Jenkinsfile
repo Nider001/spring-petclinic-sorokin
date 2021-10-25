@@ -2,6 +2,7 @@ pipeline {
 	agent none
 	stages {
                 stage('checkout'){
+                        agent any
                         steps{
                                 cleanWs()
                         }
