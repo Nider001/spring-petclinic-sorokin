@@ -20,7 +20,7 @@ pipeline {
 			steps {
 				echo 'Hello, JDK'
                                 unstash 'app'
-				sh 'java -jar ./spring-petclinic-2.5.0-SNAPSHOT.jar'
+				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar'
 			}
 		}
 	}
