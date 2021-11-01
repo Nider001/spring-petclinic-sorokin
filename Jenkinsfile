@@ -12,7 +12,7 @@ pipeline {
 			steps {
 				echo 'Hello, Maven'
 				sh 'mvn -B -D skipTests clean package'
-                                stash includes: '/var/jenkins_home/workspace/java-ci-cd-scm/target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
+                                stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
 		}
 		stage('Run') {
