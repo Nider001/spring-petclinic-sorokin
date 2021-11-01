@@ -1,18 +1,18 @@
 pipeline {
 	agent none
 	stages {
-                stage('checkout'){
-                        agent any
-                        steps{
-                                cleanWs()
-                        }
-                }
+        stage('Checkout'){
+			agent any
+            steps{
+                cleanWs()
+            }
+        }
 		stage('Build') {
 			agent { docker 'maven:3.8.2-jdk-8' }
 			steps {
 				echo 'Hello, Maven'
 				sh 'mvn -B -D skipTests clean package'
-                                stash includes: '/target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
+                                stash includes: './target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
 		}
 		stage('Run') {
@@ -20,7 +20,7 @@ pipeline {
 			steps {
 				echo 'Hello, JDK'
                                 unstash 'app'
-				sh 'java -jar /spring-petclinic-2.5.0-SNAPSHOT.jar'
+				sh 'java -jar ./spring-petclinic-2.5.0-SNAPSHOT.jar'
 			}
 		}
 	}
