@@ -11,7 +11,7 @@ pipeline {
 			agent { docker 'maven:3.8.2-jdk-8' }
 			steps {
 				echo 'Hello, Maven'
-				sh 'mvn -B -D skipTests clean package'
+				sh 'mvn -B clean package'
                                 stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
 		}
