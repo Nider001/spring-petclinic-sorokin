@@ -4,7 +4,7 @@ pipeline {
 		registryCredential = 'dockerhub'
 		dockerImage = ''
 	}
-	agent none
+	agent docker 'maven:3.8.2-jdk-8'
 	stages {
 		stage('Checkout') {
 			agent any
@@ -13,31 +13,15 @@ pipeline {
 			}
 		}
 		stage('Build') {
-			agent { docker 'maven:3.8.2-jdk-8' }
 			steps {
 				echo 'Hello, Maven'
 				sh 'mvn -B clean package'
-				stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
-		}
-		stage('Wrap') {
-			agent { docker 'openjdk:8-jre' }
-			steps {
-				unstash 'app'
-				script {
-					dockerImage = docker.build registry + ":$BUILD_NUMBER"
-				}
-				script {
-					docker.withRegistry( '', registryCredential ) {
-						dockerImage.push()
-					}
-				}
-				sh "docker rmi $registry:$BUILD_NUMBER"
-			}			
-		}
+		}		
 		stage('Run') {
-			agent { docker '$registry/$BUILD_NUMBER' }
+			agent { dockerfile true }
 			steps {
+				echo 'Hello, JRE'
 				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar --server.port=8081'
 			}
 		}
