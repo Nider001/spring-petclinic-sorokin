@@ -1,9 +1,4 @@
 pipeline {
-	environment {
-		registry = "nider001/docker-petclinic"
-		registryCredential = 'dockerhub'
-		dockerImage = ''
-	}
 	agent { docker 'maven:3.8.2-jdk-8' }
 	stages {
 		stage('Checkout') {
