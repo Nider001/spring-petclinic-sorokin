@@ -4,7 +4,7 @@ pipeline {
 		registryCredential = 'dockerhub'
 		dockerImage = ''
 	}
-	agent docker 'maven:3.8.2-jdk-8'
+	agent { docker 'maven:3.8.2-jdk-8' }
 	stages {
 		stage('Checkout') {
 			agent any
