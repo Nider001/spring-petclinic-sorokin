@@ -1,4 +1,9 @@
 pipeline {
+	environment {
+		registry = "nider001/docker-petclinic"
+		registryCredential = 'dockerhub'
+		dockerImage = ''
+	}
 	agent none
 	stages {
 		stage('Checkout') {
@@ -12,15 +17,28 @@ pipeline {
 			steps {
 				echo 'Hello, Maven'
 				sh 'mvn -B clean package'
-                                stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
+				stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
 		}
-		stage('Run') {
-			agent { docker 'openjdk:8-jre' }
+		stage('Wrap') {
+			agent { docker 'maven:3.8.2-jdk-8' }
 			steps {
-				echo 'Hello, JDK'
-                                unstash 'app'
-				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar --server.port=8081:8080'
+				unstash 'app'
+				script {
+					dockerImage = docker.build registry + ":$BUILD_NUMBER"
+				}
+				script {
+					docker.withRegistry( '', registryCredential ) {
+						dockerImage.push()
+					}
+				}
+				sh "docker rmi $registry:$BUILD_NUMBER"
+			}			
+		}
+		stage('Run') {
+			agent { docker '$registry/image:latest' }
+			steps {
+				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar --server.port=8081'
 			}
 		}
 	}
