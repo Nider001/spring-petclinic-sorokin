@@ -21,7 +21,7 @@ pipeline {
 			}
 		}
 		stage('Wrap') {
-			agent { docker 'maven:3.8.2-jdk-8' }
+			agent { docker 'openjdk:8-jre' }
 			steps {
 				unstash 'app'
 				script {
@@ -36,7 +36,7 @@ pipeline {
 			}			
 		}
 		stage('Run') {
-			agent { docker '$registry/image:latest' }
+			agent { docker '$registry/$BUILD_NUMBER' }
 			steps {
 				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar --server.port=8081'
 			}
