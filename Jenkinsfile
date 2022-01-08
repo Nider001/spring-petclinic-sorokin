@@ -22,7 +22,7 @@ pipeline {
 					}
 				}
 				stage("Wrap and send") {
-					agent { dockerfile { filename 'Dockerfile' } }
+					agent { dockerfile true }
 					stages {
 						stage("Wrap") {
 							steps {
