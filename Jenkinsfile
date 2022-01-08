@@ -22,32 +22,30 @@ pipeline {
 					}
 				}
 				stage("Wrap and send") {
-					agent {
-						dockerfile { filename 'Dockerfile' }
-						stages {
-							stage("Wrap") {
-								steps {
-									echo 'Begin wrapping'
-									script {
-										dockerImage = docker.build registry + ":$BUILD_NUMBER"
+					agent { dockerfile { filename 'Dockerfile' } }
+					stages {
+						stage("Wrap") {
+							steps {
+								echo 'Begin wrapping'
+								script {
+									dockerImage = docker.build registry + ":$BUILD_NUMBER"
+								}
+							}
+						}
+						stage("Send") {
+							steps {
+								echo 'Begin sending'
+								script {
+									docker.withRegistry( '', registryCredential ) {
+										dockerImage.push()
 									}
 								}
 							}
-							stage("Send") {
-								steps {
-									echo 'Begin sending'
-									script {
-										docker.withRegistry( '', registryCredential ) {
-											dockerImage.push()
-										}
-									}
-								}
-							}
-							stage('Remove image') {
-								steps{
-									echo 'Remove image'
-									sh "docker rmi $registry:$BUILD_NUMBER"
-								}
+						}
+						stage('Remove image') {
+							steps{
+								echo 'Remove image'
+								sh "docker rmi $registry:$BUILD_NUMBER"
 							}
 						}
 					}
@@ -55,7 +53,7 @@ pipeline {
 			}
 		}
 		stage('Run') {
-			agent { docker docker.build registry + ":$BUILD_NUMBER" }
+			agent { docker '$registry:$BUILD_NUMBER' }
 			steps {
 				echo 'Hello, JDK'
 				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar --server.port=8081'
