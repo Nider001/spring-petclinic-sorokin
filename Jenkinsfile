@@ -12,42 +12,40 @@ pipeline {
 				cleanWs()
 			}
 		}
-		stage("Build, wrap and send") {
+		stage("Build") {
 			agent { docker 'maven:3.8.2-jdk-8' }
+			steps {
+				echo 'Hello, Maven'
+				sh 'mvn -B clean package'
+				stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
+			}
+		}
+		stage("Wrap and send") {
+			agent { docker 'openjdk:8-jre' }
 			stages {
-				stage("Build") {
+				stage("Wrap") {
 					steps {
-						echo 'Hello, Maven'
-						sh 'mvn -B clean package'
+						echo 'Begin wrapping'
+						unstash 'app'
+						script {
+							dockerImage = docker.build registry + ":$BUILD_NUMBER"
+						}
 					}
 				}
-				stage("Wrap and send") {
-					agent { dockerfile true }
-					stages {
-						stage("Wrap") {
-							steps {
-								echo 'Begin wrapping'
-								script {
-									dockerImage = docker.build registry + ":$BUILD_NUMBER"
-								}
+				stage("Send") {
+					steps {
+						echo 'Begin sending'
+						script {
+							docker.withRegistry( '', registryCredential ) {
+								dockerImage.push()
 							}
 						}
-						stage("Send") {
-							steps {
-								echo 'Begin sending'
-								script {
-									docker.withRegistry( '', registryCredential ) {
-										dockerImage.push()
-									}
-								}
-							}
-						}
-						stage('Remove image') {
-							steps{
-								echo 'Remove image'
-								sh "docker rmi $registry:$BUILD_NUMBER"
-							}
-						}
+					}
+				}
+				stage('Remove image') {
+					steps{
+						echo 'Remove image'
+						sh "docker rmi $registry:$BUILD_NUMBER"
 					}
 				}
 			}
