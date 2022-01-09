@@ -6,10 +6,10 @@ pipeline {
 	}
 	agent any
 	stages {
-		stage('Checkout') {
-			agent any
+		stage('Init') {
 			steps {
 				cleanWs()
+				git 'https://github.com/Nider001/spring-petclinic-sorokin.git'
 			}
 		}
 		stage("Build") {
@@ -20,34 +20,29 @@ pipeline {
 				stash includes: 'target/spring-petclinic-2.5.0-SNAPSHOT.jar', name: 'app'
 			}
 		}
-		stage("Wrap and send") {
-			agent { docker 'openjdk:8-jre' }
-			stages {
-				stage("Wrap") {
-					steps {
-						echo 'Begin wrapping'
-						unstash 'app'
-						script {
-							dockerImage = docker.build registry + ":$BUILD_NUMBER"
-						}
+		stage("Wrap") {
+			steps {
+				echo 'Begin wrapping'
+				unstash 'app'
+				script {
+					dockerImage = docker.build registry + ":$BUILD_NUMBER"
+				}
+			}
+		}
+		stage("Send") {
+			steps {
+				echo 'Begin sending'
+				script {
+					docker.withRegistry( '', registryCredential ) {
+						dockerImage.push()
 					}
 				}
-				stage("Send") {
-					steps {
-						echo 'Begin sending'
-						script {
-							docker.withRegistry( '', registryCredential ) {
-								dockerImage.push()
-							}
-						}
-					}
-				}
-				stage('Remove image') {
-					steps{
-						echo 'Remove image'
-						sh "docker rmi $registry:$BUILD_NUMBER"
-					}
-				}
+			}
+		}
+		stage('Remove image') {
+			steps{
+				echo 'Remove image'
+				sh "docker rmi $registry:$BUILD_NUMBER"
 			}
 		}
 		stage('Run') {
