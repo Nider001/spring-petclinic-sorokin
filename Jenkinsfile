@@ -51,7 +51,7 @@ pipeline {
 			agent {
 				docker {
 					image "$dockerImageName"
-					args "--network jenkins/jenkins:lts --rm -p 8081:8081"
+					args " --rm -it -p 8081:8081"
 				}
 			}
 			steps {
