@@ -49,7 +49,7 @@ pipeline {
 			agent { docker '$registry:$BUILD_NUMBER' }
 			steps {
 				echo 'Hello, JDK'
-				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar --server.port=8081'
+				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar -Dserver.port=8081'
 			}
 		}
 	}
