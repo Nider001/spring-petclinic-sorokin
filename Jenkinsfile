@@ -2,6 +2,7 @@ pipeline {
 	environment {
 		registry = "nider001/docker-petclinic"
 		registryCredential = 'dockerhub'
+		dockerImageName = ''
 		dockerImage = ''
 	}
 	agent any
@@ -25,7 +26,8 @@ pipeline {
 				echo 'Begin wrapping'
 				unstash 'app'
 				script {
-					dockerImage = docker.build registry + ":petclinic-" + UUID.randomUUID().toString()
+					dockerImageName = registry + ":petclinic-" + UUID.randomUUID().toString()
+					dockerImage = docker.build dockerImageName
 				}
 			}
 		}
@@ -48,7 +50,7 @@ pipeline {
 		stage('Run') {
 			agent {
 				docker {
-					image '$registry:$BUILD_NUMBER'
+					image '$dockerImageName'
 					args '--network jenkins/jenkins:lts --rm -p 8081:8081'
 				}
 			}
