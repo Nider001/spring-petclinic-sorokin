@@ -26,8 +26,8 @@ pipeline {
 				echo 'Begin wrapping'
 				unstash 'app'
 				script {
-					dockerImageName = "petclinic-" + UUID.randomUUID().toString()
-					dockerImage = docker.build registry + ":" + dockerImageName
+					dockerImageName = registry + ":petclinic-" + UUID.randomUUID().toString()
+					dockerImage = docker.build dockerImageName
 				}
 			}
 		}
@@ -44,13 +44,13 @@ pipeline {
 		stage('Remove image') {
 			steps{
 				echo 'Remove image'
-				sh "docker rmi $registry:$dockerImageName"
+				sh "docker rmi $dockerImageName"
 			}
 		}
 		stage('Run') {
 			agent {
 				docker {
-					image '$registry:$dockerImageName'
+					image '${dockerImageName}'
 					args '--network jenkins/jenkins:lts --rm -p 8081:8081'
 				}
 			}
