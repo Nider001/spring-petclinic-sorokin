@@ -46,10 +46,15 @@ pipeline {
 			}
 		}
 		stage('Run') {
-			agent { docker '$registry:$BUILD_NUMBER' }
+			agent {
+				docker {
+					image '$registry:$BUILD_NUMBER'
+					args '-p 8081:8081'
+				}
+			}
 			steps {
 				echo 'Hello, JDK'
-				sh 'java -jar ./target/spring-petclinic-2.5.0-SNAPSHOT.jar -Dserver.port=8081'
+				sh 'java -jar -Dserver.port=8081 ./target/spring-petclinic-2.5.0-SNAPSHOT.jar'
 			}
 		}
 	}
