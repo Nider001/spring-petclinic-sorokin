@@ -44,13 +44,13 @@ pipeline {
 		stage('Remove image') {
 			steps{
 				echo 'Remove image'
-				sh "docker rmi $dockerImage"
+				sh "docker rmi $dockerImageName"
 			}
 		}
 		stage('Run') {
 			agent {
 				docker {
-					image '$dockerImageName'
+					image '$dockerImage'
 					args '--network jenkins/jenkins:lts --rm -p 8081:8081'
 				}
 			}
