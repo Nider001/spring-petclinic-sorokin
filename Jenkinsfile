@@ -25,7 +25,7 @@ pipeline {
 				echo 'Begin wrapping'
 				unstash 'app'
 				script {
-					dockerImage = docker.build registry + ":$BUILD_NUMBER"
+					dockerImage = "petclinic-" + UUID.randomUUID().toString()
 				}
 			}
 		}
@@ -49,7 +49,7 @@ pipeline {
 			agent {
 				docker {
 					image '$registry:$BUILD_NUMBER'
-					args '-p 8081:8081'
+					args '--network jenkins/jenkins:lts --rm -it -p 8081:8081'
 				}
 			}
 			steps {
