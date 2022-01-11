@@ -50,7 +50,7 @@ pipeline {
 		stage('Run') {
 			agent {
 				docker {
-					image '$dockerImage'
+					image '$dockerImageName'
 					args '--network jenkins/jenkins:lts --rm -p 8081:8081'
 				}
 			}
