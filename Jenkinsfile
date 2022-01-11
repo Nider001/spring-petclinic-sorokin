@@ -25,7 +25,7 @@ pipeline {
 				echo 'Begin wrapping'
 				unstash 'app'
 				script {
-					dockerImage = "petclinic-" + UUID.randomUUID().toString()
+					dockerImage = docker.build registry + ":petclinic-" + UUID.randomUUID().toString()
 				}
 			}
 		}
