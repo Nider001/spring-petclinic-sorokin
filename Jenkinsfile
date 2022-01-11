@@ -42,14 +42,14 @@ pipeline {
 		stage('Remove image') {
 			steps{
 				echo 'Remove image'
-				sh "docker rmi $registry:$BUILD_NUMBER"
+				sh "docker rmi $dockerImage"
 			}
 		}
 		stage('Run') {
 			agent {
 				docker {
 					image '$registry:$BUILD_NUMBER'
-					args '--network jenkins/jenkins:lts --rm -it -p 8081:8081'
+					args '--network jenkins/jenkins:lts --rm -p 8081:8081'
 				}
 			}
 			steps {
