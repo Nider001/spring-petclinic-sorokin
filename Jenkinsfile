@@ -51,12 +51,12 @@ pipeline {
 			agent {
 				docker {
 					image "$dockerImageName"
-					args " --rm -it -p 8081:8081"
+					args "-p 127.0.0.1:8000:8000 -d"
 				}
 			}
 			steps {
 				echo 'Hello, JDK'
-				sh 'java -jar -Dserver.port=8081 ./target/spring-petclinic-2.5.0-SNAPSHOT.jar'
+				sh 'java -jar -Dserver.port=8000 ./target/spring-petclinic-2.5.0-SNAPSHOT.jar'
 			}
 		}
 	}
