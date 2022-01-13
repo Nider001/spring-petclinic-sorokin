@@ -51,12 +51,12 @@ pipeline {
 			agent {
 				docker {
 					image "$dockerImageName"
-					args "--publish 8000:8000 -d"
+					args "--publish 8442:3000 -d"
 				}
 			}
 			steps {
 				echo 'Hello, JDK'
-				sh 'java -jar -Dserver.port=8000 ./target/spring-petclinic-2.5.0-SNAPSHOT.jar'
+				sh 'java -jar -Dserver.port=3000 ./target/spring-petclinic-2.5.0-SNAPSHOT.jar'
 			}
 		}
 	}
