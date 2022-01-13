@@ -51,7 +51,7 @@ pipeline {
 			agent {
 				docker {
 					image "$dockerImageName"
-					args "-p 8000:8000 -d"
+					args "--network jenkins --publish 8000:8000 -d"
 				}
 			}
 			steps {
