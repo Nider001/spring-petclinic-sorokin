@@ -51,7 +51,7 @@ pipeline {
 			agent {
 				docker {
 					image "$dockerImageName"
-					args "--publish 127.0.0.1:8000:8000 -d"
+					args "--publish 8000:8000 -d"
 				}
 			}
 			steps {
