@@ -1,3 +1,3 @@
 FROM openjdk:8-jre
 COPY /target/spring-petclinic-2.5.0-SNAPSHOT.jar .
-EXPOSE 3000
+EXPOSE 8000
